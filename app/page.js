@@ -101,9 +101,13 @@ export default function Home() {
 
   //ถ้ามีการเปลี่ยนค่าใน inputTest2 ให้ใช้ฟังก์ชัน f(n) โดยค่า inputTest2 ต้องมากกว่าหรือเท่า 0 และ น้อยกว่าหรือเท่ากับ 30
   useEffect(() => {
-    if (0 <= inputTest2 <= 30) {
+    if (0 <= inputTest2 && inputTest2 <= 30 && inputTest2 !== "") {
       const result = f(inputTest2);
       setOutputTest2(result);
+    } else {
+      setOutputTest2(
+        "input ต้องมีค่ามากกว่าหรือเท่ากับ 0 และ น้อยกว่าหรือเท่ากับ 30"
+      );
     }
   }, [inputTest2]);
 
