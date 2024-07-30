@@ -4,49 +4,63 @@ import React, { useEffect, useState } from "react";
 import sampleData from "@/constant/sampleData";
 
 export default function Home() {
+  //สร้าง state เพื่อเก็บ input และแสดงผล output
   const [inputTest1, setInputTest1] = useState({
     orderDate: "2024-07-29",
     status: "Processing",
   });
   const [outputTest1, setOutputTest1] = useState([]);
 
+  //ฟังก์ชัน get_orders_by_date รับ input orderDate และ status เพื่อแสดงผลข้อมูล ตาม inupt ที่ได้รับ
   const get_orders_by_date = (orderDate, status) => {
+    //เช็คว่ามี input orderDate มั้ย ถ้าไม่มีให้ filter แค่ status แทน
     if (orderDate) {
-      return sampleData.orders
-        .filter((order) => {
-          const dataOrderDate = new Date(order.orderDate);
-          const year = dataOrderDate.getFullYear();
-          const month = String(dataOrderDate.getMonth() + 1).padStart(2, "0");
-          const day = String(dataOrderDate.getDate()).padStart(2, "0");
-          const newDataOrderDate = `${year}-${month}-${day}`;
-          if (status !== "None" && status !== "") {
-            return (
-              newDataOrderDate === orderDate.trim() &&
-              order.status === status.trim()
-            );
-          } else {
-            return newDataOrderDate === orderDate.trim();
-          }
-        })
-        .map((order) => ({
-          ...order,
-          totalValue: order.items.reduce(
-            (total, item) => total + item.price * item.quantity,
-            0
-          ),
-        }));
-    } else {
-      if (status !== "None" && status !== "") {
-        return sampleData.orders
-          .filter((order) => order.status === status.trim())
+      return (
+        sampleData.orders
+          .filter((order) => {
+            //filter ข้อมูล โดยแปลงค่า orderDate ที่ได้จาก sampleData เป็นรูปแบบ YYYY-MM-DD
+            const dataOrderDate = new Date(order.orderDate);
+            const year = dataOrderDate.getFullYear();
+            const month = String(dataOrderDate.getMonth() + 1).padStart(2, "0");
+            const day = String(dataOrderDate.getDate()).padStart(2, "0");
+            const newDataOrderDate = `${year}-${month}-${day}`;
+            //แสดงผลข้อมูลที่มี newDataOrderDate ตรงกับ input orderDate
+            //ถ้ามี input status ด้วยให้เพิ่ม filter ข้อมูลที่มี status ตรงกับ input status ด้วย
+            if (status !== "None" && status !== "") {
+              return (
+                newDataOrderDate === orderDate.trim() &&
+                order.status === status.trim()
+              );
+            } else {
+              return newDataOrderDate === orderDate.trim();
+            }
+          })
+          //แสดงผลรวมข้อมูลทั้งหมดทีไ่ด้จาก filter โดยเพิ่มค่า totalValue คือค่าผลรวมของ price คูณด้วย quantity
           .map((order) => ({
             ...order,
             totalValue: order.items.reduce(
               (total, item) => total + item.price * item.quantity,
               0
             ),
-          }));
+          }))
+      );
+    } else {
+      //เช็ค input status ถ้ามีให้้เพิ่ม filter ข้อมูลที่มี status ตรงกับ input status
+      if (status !== "None" && status !== "") {
+        return (
+          sampleData.orders
+            .filter((order) => order.status === status.trim())
+            //แสดงผลรวมข้อมูลทั้งหมดทีไ่ด้จาก filter โดยเพิ่มค่า totalValue คือค่าผลรวมของ price คูณด้วย quantity
+            .map((order) => ({
+              ...order,
+              totalValue: order.items.reduce(
+                (total, item) => total + item.price * item.quantity,
+                0
+              ),
+            }))
+        );
       } else {
+        //แสดงผลรวมข้อมูลทั้งหมดทีไ่ด้จาก filter โดยเพิ่มค่า totalValue คือค่าผลรวมของ price คูณด้วย quantity
         return sampleData.orders.map((order) => ({
           ...order,
           totalValue: order.items.reduce(
@@ -58,6 +72,7 @@ export default function Home() {
     }
   };
 
+  //ถ้ามีการเปลี่ยนค่าใน inputTest1 ให้ใช้ฟังก์ชัน get_orders_by_date และเซ็ตค่าลงใน outputTest1
   useEffect(() => {
     if (sampleData) {
       const result = get_orders_by_date(
@@ -68,11 +83,14 @@ export default function Home() {
     }
   }, [inputTest1]);
 
+  //สร้าง state เพื่อเก็บ input และแสดงผล output
   const [inputTest2, setInputTest2] = useState(0);
   const [outputTest2, setOutputTest2] = useState(0);
 
+  //แสดงโจทย์ Fibonacci Number
   const test2 = "F(0) = 0, F(1) = 1 F(n) = F(n - 1) + F(n - 2), for n > 1.";
 
+  //ฟังชัน f(n) รับค่า n โดยถ้า n น้อยกว่าหรือเท่ากับ 1 ให้คืนค่า n ถ้ามากกว่า 1 ให้ใช้ฟังก์ชันคำนวณ f(n - 1) + f(n - 2)
   const f = (n) => {
     if (n <= 1) {
       return n;
@@ -81,6 +99,7 @@ export default function Home() {
     }
   };
 
+  //ถ้ามีการเปลี่ยนค่าใน inputTest2 ให้ใช้ฟังก์ชัน f(n) โดยค่า inputTest2 ต้องมากกว่าหรือเท่า 0 และ น้อยกว่าหรือเท่ากับ 30
   useEffect(() => {
     if (0 <= inputTest2 <= 30) {
       const result = f(inputTest2);
@@ -126,6 +145,7 @@ export default function Home() {
           <div className="space-y-[1rem]">
             <p>orderDate : {inputTest1.orderDate}</p>
             <p>status : {inputTest1.status}</p>
+            {/* ถ้า outputTest1 มีข้อมูลมากกว่า 0 ให้แสดงผลเป็นตาราง */}
             {outputTest1.length > 0 && (
               <table className="text-white border">
                 <thead>
@@ -138,12 +158,14 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody>
+                  {/* แสดงข้อมูลทั้งหใดใน outputTest1 โดยใช้ orderId เป็น key */}
                   {outputTest1.map((order) => (
                     <tr key={order.orderId}>
                       <td className="border p-4">{order.orderId}</td>
                       <td className="border p-4">{order.customerId}</td>
                       <td className="border p-4">{order.orderDate}</td>
                       <td className="border p-4">{order.status}</td>
+                      {/* แปลง totalValue เป็นทศนิยม 2 ตำแหน่ง */}
                       <td className="border p-4">
                         ${order.totalValue.toFixed(2)}
                       </td>
